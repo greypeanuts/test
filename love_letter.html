@@ -86,12 +86,76 @@
                     transform: translateY(0);
                 }
             }
+            .typing {
+                overflow: hidden;
+                border-right: 0.15em solid #ef4444;
+                white-space: nowrap;
+                margin: 0 auto;
+                animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            }
+            @keyframes typing {
+                from { width: 0 }
+                to { width: 100% }
+            }
+            @keyframes blink-caret {
+                from, to { border-color: transparent }
+                50% { border-color: #ef4444; }
+            }
+            .glow {
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            }
+            .pulse {
+                animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.7;
+                }
+            }
+            .confetti {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                animation: confetti 3s ease-in-out forwards;
+            }
+            @keyframes confetti {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(500px) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+            .bg-gradient-animation {
+                background-size: 200% 200%;
+                animation: gradient 15s ease infinite;
+            }
+            @keyframes gradient {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
         }
     </style>
 </head>
 <body class="bg-love-50 min-h-screen flex flex-col">
+    <!-- 背景粒子效果 -->
+    <div id="particles" class="fixed inset-0 z-0"></div>
+    
     <!-- 顶部装饰 -->
-    <div class="relative overflow-hidden w-full h-32 bg-gradient-to-r from-love-400 to-love-600">
+    <div class="relative overflow-hidden w-full h-32 bg-gradient-to-r from-love-400 to-love-600 bg-gradient-animation">
         <div class="absolute inset-0 opacity-20">
             <div class="heart-beat absolute text-white text-3xl" style="top: 20%; left: 10%"><i class="fa fa-heart"></i></div>
             <div class="heart-beat absolute text-white text-2xl" style="top: 60%; left: 20%"><i class="fa fa-heart"></i></div>
@@ -102,11 +166,46 @@
 
     <!-- 主要内容 -->
     <main class="flex-1 container mx-auto px-4 py-8">
-        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 fade-in">
+        <!-- 界面1：欢迎界面 -->
+        <div id="screen1" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 fade-in">
+            <div class="text-center mb-8">
+                <div class="text-6xl text-love-500 mb-4 heart-beat">
+                    <i class="fa fa-heart"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-love-600 mb-2 text-shadow">你好</h1>
+                <p class="text-gray-600 mb-6">有一个特别的消息要告诉你</p>
+                <div class="w-20 h-1 bg-love-400 mx-auto rounded-full pulse"></div>
+            </div>
+            <div class="mt-10">
+                <button id="nextToScreen2" class="w-full bg-love-500 hover:bg-love-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md glow">
+                    <i class="fa fa-arrow-right mr-2"></i>开始
+                </button>
+            </div>
+        </div>
+
+        <!-- 界面2：问题界面 -->
+        <div id="screen2" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 fade-in hidden">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-love-600 mb-6 text-shadow">你愿意花一点时间</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-love-600 mb-2 text-shadow">听我对你说些话吗？</h1>
+                <div class="w-20 h-1 bg-love-400 mx-auto rounded-full pulse"></div>
+            </div>
+            <div class="mt-10 space-y-4">
+                <button id="nextToScreen3" class="w-full bg-love-500 hover:bg-love-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md glow">
+                    <i class="fa fa-heart mr-2"></i>愿意
+                </button>
+                <button id="backToScreen1" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-full transition-all duration-300">
+                    <i class="fa fa-arrow-left mr-2"></i>返回
+                </button>
+            </div>
+        </div>
+
+        <!-- 界面3：表白界面 -->
+        <div id="screen3" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 fade-in hidden">
             <!-- 标题 -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-love-600 mb-2 text-shadow">亲爱的</h1>
-                <div class="w-20 h-1 bg-love-400 mx-auto rounded-full"></div>
+                <h1 class="text-3xl md:text-4xl font-bold text-love-600 mb-2 text-shadow typing">亲爱的</h1>
+                <div class="w-20 h-1 bg-love-400 mx-auto rounded-full pulse"></div>
             </div>
 
             <!-- 表白内容 -->
@@ -119,8 +218,8 @@
 
             <!-- 互动按钮 -->
             <div class="mt-10 space-y-4">
-                <button id="yesBtn" class="w-full bg-love-500 hover:bg-love-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md">
-                    <i class="fa fa-heart mr-2"></i>我也爱你
+                <button id="yesBtn" class="w-full bg-love-500 hover:bg-love-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md glow">
+                    <i class="fa fa-heart mr-2 heart-beat"></i>我也爱你
                 </button>
                 <button id="noBtn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-full transition-all duration-300">
                     <i class="fa fa-times mr-2"></i>再考虑一下
@@ -149,34 +248,156 @@
     </div>
 
     <script>
-        // 获取元素
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        const popup = document.getElementById('popup');
-        const closePopup = document.getElementById('closePopup');
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取元素
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const popup = document.getElementById('popup');
+            const closePopup = document.getElementById('closePopup');
+            const particles = document.getElementById('particles');
 
-        // 为"我也爱你"按钮添加点击事件
-        yesBtn.addEventListener('click', function() {
-            popup.classList.remove('hidden');
-        });
-
-        // 为"再考虑一下"按钮添加点击事件（添加有趣的交互）
-        noBtn.addEventListener('mouseover', function() {
-            const randomX = Math.random() * 100 - 50;
-            const randomY = Math.random() * 100 - 50;
-            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
-        });
-
-        // 为关闭弹窗按钮添加点击事件
-        closePopup.addEventListener('click', function() {
-            popup.classList.add('hidden');
-        });
-
-        // 为弹窗添加点击外部关闭功能
-        popup.addEventListener('click', function(e) {
-            if (e.target === popup) {
-                popup.classList.add('hidden');
+            // 生成背景粒子
+            function createParticles() {
+                const particleCount = 50;
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'absolute rounded-full opacity-50';
+                    
+                    // 随机大小
+                    const size = Math.random() * 8 + 2;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // 随机位置
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    
+                    // 随机颜色
+                    const colors = ['#ef4444', '#f87171', '#fca5a5', '#fecaca'];
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // 随机动画
+                    const duration = Math.random() * 10 + 10;
+                    particle.style.animation = `float ${duration}s ease-in-out infinite`;
+                    particle.style.animationDelay = `${Math.random() * 5}s`;
+                    
+                    particles.appendChild(particle);
+                }
             }
+
+            // 生成庆祝效果（五彩纸屑）
+            function createConfetti() {
+                const confettiCount = 100;
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // 随机大小
+                    const size = Math.random() * 10 + 5;
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    
+                    // 随机位置
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.top = `0`;
+                    
+                    // 随机颜色
+                    const colors = ['#ef4444', '#f87171', '#fca5a5', '#fecaca', '#ffffff', '#fbbf24', '#34d399'];
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // 随机角度和动画
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    const duration = Math.random() * 3 + 2;
+                    confetti.style.animationDuration = `${duration}s`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, duration * 1000);
+                }
+            }
+
+            // 获取界面元素
+            const screen1 = document.getElementById('screen1');
+            const screen2 = document.getElementById('screen2');
+            const screen3 = document.getElementById('screen3');
+            
+            // 获取按钮元素
+            const nextToScreen2 = document.getElementById('nextToScreen2');
+            const nextToScreen3 = document.getElementById('nextToScreen3');
+            const backToScreen1 = document.getElementById('backToScreen1');
+
+            // 界面切换函数
+            function showScreen(screen) {
+                // 隐藏所有界面
+                screen1.classList.add('hidden');
+                screen2.classList.add('hidden');
+                screen3.classList.add('hidden');
+                
+                // 显示指定界面
+                screen.classList.remove('hidden');
+            }
+
+            // 为界面1的按钮添加点击事件
+            nextToScreen2.addEventListener('click', function() {
+                showScreen(screen2);
+            });
+
+            // 为界面2的按钮添加点击事件
+            nextToScreen3.addEventListener('click', function() {
+                showScreen(screen3);
+            });
+
+            backToScreen1.addEventListener('click', function() {
+                showScreen(screen1);
+            });
+
+            // 为"我也爱你"按钮添加点击事件
+            yesBtn.addEventListener('click', function() {
+                createConfetti();
+                popup.classList.remove('hidden');
+            });
+
+            // 为"再考虑一下"按钮添加鼠标悬停事件（添加有趣的交互）
+            noBtn.addEventListener('mouseover', function() {
+                // 生成随机位置
+                const randomX = Math.random() * 100 - 50;
+                const randomY = Math.random() * 100 - 50;
+                
+                // 应用移动效果
+                noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                noBtn.style.transition = 'transform 0.3s ease-in-out';
+            });
+            
+            // 为"再考虑一下"按钮添加点击事件，也触发移动效果
+            noBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // 生成随机位置
+                const randomX = Math.random() * 100 - 50;
+                const randomY = Math.random() * 100 - 50;
+                
+                // 应用移动效果
+                noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                noBtn.style.transition = 'transform 0.3s ease-in-out';
+            });
+
+            // 为关闭弹窗按钮添加点击事件
+            closePopup.addEventListener('click', function() {
+                popup.classList.add('hidden');
+            });
+
+            // 为弹窗添加点击外部关闭功能
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    popup.classList.add('hidden');
+                }
+            });
+
+            // 创建粒子
+            createParticles();
         });
     </script>
 </body>
