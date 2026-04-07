@@ -247,6 +247,39 @@
         </div>
     </div>
 
+    <!-- 再考虑一下确认弹窗 -->
+    <div id="confirmPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 text-center">
+            <div class="text-4xl text-love-500 mb-4">
+                <i class="fa fa-question-circle"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-love-600 mb-2">你确定吗？</h2>
+            <p class="text-gray-600 mb-6">再考虑一下嘛~</p>
+            <div class="flex space-x-4">
+                <button id="cancelBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-full transition-all duration-300">
+                    点错了
+                </button>
+                <button id="confirmBtn" class="flex-1 bg-love-500 hover:bg-love-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确定界面弹窗 -->
+    <div id="surePopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 text-center">
+            <div class="text-4xl text-love-500 mb-4">
+                <i class="fa fa-exclamation-circle"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-love-600 mb-2">真的要这样吗？</h2>
+            <p class="text-gray-600 mb-6">再给我一次机会吧~</p>
+            <button id="sureBtn" class="bg-love-500 hover:bg-love-600 text-white font-bold py-2 px-6 rounded-full transition-all duration-300">
+                确定
+            </button>
+        </div>
+    </div>
+
     <script>
         // 等待DOM加载完成
         document.addEventListener('DOMContentLoaded', function() {
@@ -255,7 +288,15 @@
             const noBtn = document.getElementById('noBtn');
             const popup = document.getElementById('popup');
             const closePopup = document.getElementById('closePopup');
+            const confirmPopup = document.getElementById('confirmPopup');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const surePopup = document.getElementById('surePopup');
+            const sureBtn = document.getElementById('sureBtn');
             const particles = document.getElementById('particles');
+            
+            // 点击计数
+            let confirmCount = 0;
 
             // 生成背景粒子
             function createParticles() {
@@ -372,16 +413,36 @@
                 noBtn.style.transition = 'transform 0.3s ease-in-out';
             });
             
-            // 为"再考虑一下"按钮添加点击事件，也触发移动效果
+            // 为"再考虑一下"按钮添加点击事件，弹出确认弹窗
             noBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // 生成随机位置
-                const randomX = Math.random() * 100 - 50;
-                const randomY = Math.random() * 100 - 50;
+                // 显示确认弹窗
+                confirmPopup.classList.remove('hidden');
+            });
+            
+            // 为"点错了"按钮添加点击事件
+            cancelBtn.addEventListener('click', function() {
+                confirmPopup.classList.add('hidden');
+            });
+            
+            // 为"确定"按钮添加点击事件
+            confirmBtn.addEventListener('click', function() {
+                confirmPopup.classList.add('hidden');
+                confirmCount++;
                 
-                // 应用移动效果
-                noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                noBtn.style.transition = 'transform 0.3s ease-in-out';
+                if (confirmCount < 3) {
+                    // 显示确定界面弹窗
+                    surePopup.classList.remove('hidden');
+                } else {
+                    // 重置计数并回到第一个界面
+                    confirmCount = 0;
+                    showScreen(screen1);
+                }
+            });
+            
+            // 为确定界面的"确定"按钮添加点击事件
+            sureBtn.addEventListener('click', function() {
+                surePopup.classList.add('hidden');
             });
 
             // 为关闭弹窗按钮添加点击事件
